@@ -24,18 +24,23 @@ public class AdminController {
     @RequestMapping(value = "/products/add", method = RequestMethod.POST)
     public @ResponseBody ResponseObject productsAdd(ProductDTO product, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
+            logger.error("Ошибка добавления товара: " + "Неверно задано поле: " + bindingResult.getFieldError().getField());
             return new ResponseObject("Неверно задано поле: " + bindingResult.getFieldError().getField(), false);
         }
         if (!StringUtils.hasText(product.getName())) {
+            logger.error("Ошибка добавления товара: " + "Укажите имя товара {}", product.getName());
             return new ResponseObject("Укажите имя товара", false);
         }
         if (!StringUtils.hasText(product.getDescription())) {
+            logger.error("Ошибка добавления товара: " + "Укажите описание товара {}", product.getDescription());
             return new ResponseObject("Укажите описание товара", false);
         }
         if (product.getPrice() == null || product.getPrice() < 0) {
+            logger.error("Ошибка добавления товара: " + "Неверно задана цена {}", product.getPrice());
             return new ResponseObject("Неверно задана цена", false);
         }
         if (product.getStock() == null || product.getStock() < 0) {
+            logger.error("Ошибка добавления товара: " + "Неверно задано кол-во товара {}", product.getStock());
             return new ResponseObject("Неверно задано кол-во товара", false);
         }
         productService.addProduct(new Product(product));
@@ -47,23 +52,29 @@ public class AdminController {
     public @ResponseBody ResponseObject productsEdit(@RequestParam("action") String action, @PathVariable("productId") Long productId, ProductDTO product, BindingResult bindingResult) {
         if (action.equals("save")) {
             if (bindingResult.hasErrors()) {
+                logger.error("Ошибка редактирования товара: " + "Неверно задано поле: " + bindingResult.getFieldError().getField());
                 return new ResponseObject("Неверно задано поле: " + bindingResult.getFieldError().getField(), false);
             }
             if (!StringUtils.hasText(product.getName())) {
+                logger.error("Ошибка редактирования товара: " + "Укажите имя товара {}", product.getName());
                 return new ResponseObject("Укажите имя товара", false);
             }
             if (!StringUtils.hasText(product.getDescription())) {
+                logger.error("Ошибка редактирования товара: " + "Укажите описание товара {}",product.getDescription());
                 return new ResponseObject("Укажите описание товара", false);
             }
             if (product.getPrice() == null || product.getPrice() < 0) {
+                logger.error("Ошибка редактирования товара: " + "Неверно задана цена {}",product.getPrice());
                 return new ResponseObject("Неверно задана цена", false);
             }
             if (StringUtils.isEmpty(product.getStock())) {
+                logger.error("Ошибка редактирования товара: " + "Укажите кол-во товара {}",product.getStock());
                 return new ResponseObject("Укажите кол-во товара", false);
             }
         }
         Product dbProduct = productService.getProductById(productId);
         if (dbProduct == null) {
+            logger.error("Ошибка редактирования товара: " + "Такого товара не существует {}",product.getId());
             return new ResponseObject("Такого товара не существует", true);
         } else {
             dbProduct.setName(product.getName());
